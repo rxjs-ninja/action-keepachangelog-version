@@ -62,27 +62,21 @@ function getFormattedDate() {
 }
 function runExec(rootDir, command, args) {
     return __awaiter(this, void 0, void 0, function () {
-        var output_1, options, e_1;
+        var output, options;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    output_1 = '';
+                    output = '';
                     options = {
                         listeners: {
-                            stdout: function (data) { return output_1 += data.toString(); }
+                            stdout: function (data) { return output += data.toString(); }
                         },
                         cwd: rootDir
                     };
                     return [4 /*yield*/, exec.exec(command, args, options)];
                 case 1:
                     _a.sent();
-                    return [2 /*return*/, output_1.trim()];
-                case 2:
-                    e_1 = _a.sent();
-                    console.error(e_1);
-                    throw e_1;
-                case 3: return [2 /*return*/];
+                    return [2 /*return*/, output.trim()];
             }
         });
     });
@@ -107,11 +101,10 @@ function getUpdatedLibs(foundChangelogs) {
  */
 function getLibsVersions(rootDir, libFolder, libsWithChangelogs) {
     return __awaiter(this, void 0, void 0, function () {
-        var versions, packageFiles, packages, foundPackages, _loop_1, _i, foundPackages_1, pack, e_2;
+        var versions, packageFiles, packages, foundPackages, _i, foundPackages_1, pack, version;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 7, , 8]);
                     versions = [];
                     packageFiles = libsWithChangelogs.map(function (lib) { return rootDir + "/" + libFolder + "/" + lib + "/package.json"; });
                     return [4 /*yield*/, glob.create(packageFiles.join('\n'))];
@@ -120,45 +113,20 @@ function getLibsVersions(rootDir, libFolder, libsWithChangelogs) {
                     return [4 /*yield*/, packages.glob()];
                 case 2:
                     foundPackages = _a.sent();
-                    _loop_1 = function (pack) {
-                        var output, options;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    output = '';
-                                    options = {
-                                        listeners: {
-                                            stdout: function (data) {
-                                                output += data.toString();
-                                            }
-                                        }
-                                    };
-                                    return [4 /*yield*/, exec.exec("jq", ['-r', '.version', pack], options)];
-                                case 1:
-                                    _a.sent();
-                                    versions.push(output.toString().trim());
-                                    return [2 /*return*/];
-                            }
-                        });
-                    };
                     _i = 0, foundPackages_1 = foundPackages;
                     _a.label = 3;
                 case 3:
                     if (!(_i < foundPackages_1.length)) return [3 /*break*/, 6];
                     pack = foundPackages_1[_i];
-                    return [5 /*yield**/, _loop_1(pack)];
+                    return [4 /*yield*/, runExec(rootDir, 'jq', ['-r', '.version', pack])];
                 case 4:
-                    _a.sent();
+                    version = _a.sent();
+                    versions.push(version.trim());
                     _a.label = 5;
                 case 5:
                     _i++;
                     return [3 /*break*/, 3];
                 case 6: return [2 /*return*/, versions];
-                case 7:
-                    e_2 = _a.sent();
-                    console.error(e_2);
-                    throw e_2;
-                case 8: return [2 /*return*/];
             }
         });
     });
@@ -172,11 +140,10 @@ function getLibsVersions(rootDir, libFolder, libsWithChangelogs) {
  */
 function updateChangelog(foundChangelogs, versions, replaceText) {
     return __awaiter(this, void 0, void 0, function () {
-        var dryRun, count, _i, foundChangelogs_1, changelog, version, replace, file, result, update, e_3;
+        var dryRun, count, _i, foundChangelogs_1, changelog, version, replace, file, result, update;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 6, , 7]);
                     dryRun = core.getInput('dryrun');
                     count = 0;
                     _i = 0, foundChangelogs_1 = foundChangelogs;
@@ -191,7 +158,7 @@ function updateChangelog(foundChangelogs, versions, replaceText) {
                     file = _a.sent();
                     result = file.toString();
                     if (!result.includes("[" + replaceText)) {
-                        return [2 /*return*/, Promise.reject("The changelog " + changelog + " does not have an [" + replaceText + "] token")];
+                        throw new Error("The changelog " + changelog + " does not have an [" + replaceText + "] token. Exiting.");
                     }
                     update = result.replace("[" + replaceText + "]", replace);
                     if (!(!dryRun || dryRun && dryRun === 'false')) return [3 /*break*/, 4];
@@ -202,12 +169,7 @@ function updateChangelog(foundChangelogs, versions, replaceText) {
                 case 4:
                     _i++;
                     return [3 /*break*/, 1];
-                case 5: return [3 /*break*/, 7];
-                case 6:
-                    e_3 = _a.sent();
-                    console.error(e_3);
-                    throw e_3;
-                case 7: return [2 /*return*/];
+                case 5: return [2 /*return*/];
             }
         });
     });
