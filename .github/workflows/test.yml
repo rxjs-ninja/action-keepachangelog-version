@@ -10,15 +10,17 @@ jobs:
   # unit tests
   install-main:
     runs-on: ubuntu-latest
-
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      run: npm ci
-    - name: Install Test Workspace
-      run: cd test-workspace && npm ci
-    - name: Unit Tests
-      run: npm test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Actions Workspace
+        run: npm ci
+      - name: Install Test Workspace
+        run: cd test-workspace && npm ci
+      - name: Unit Tests
+        run: npm test
 
 
   # test action works running from the graph
