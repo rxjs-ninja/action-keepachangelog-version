@@ -17,6 +17,7 @@ describe('NX Keep-A-Changelog Action', () => {
         let content = await readF(cl);
         content = `// New Comment\n` + cl;
         await writeF(cl, content)
+        await execAsync('git config user.email "test@test" && git config user.name "Test"')
         await execAsync(`git add . && git commit -m "Add test lib"`)
     })
 
