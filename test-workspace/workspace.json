@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "projects": {
+    "test-lib-1": {
+      "root": "packages/test-lib-1",
+      "sourceRoot": "packages/test-lib-1/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "packages/test-lib-1/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/packages/test-lib-1"
+          ],
+          "options": {
+            "jestConfig": "packages/test-lib-1/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "test-lib-2": {
+      "root": "packages/test-lib-2",
+      "sourceRoot": "packages/test-lib-2/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "packages/test-lib-2/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/packages/test-lib-2"
+          ],
+          "options": {
+            "jestConfig": "packages/test-lib-2/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/workspace"
+  }
+}

@@ -1,13 +1,17 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'Keep-A-Changelog Version'
+description: 'Versions a file that conforms to Keep-A-Changelog format'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  filename:  # The filename
+    description: 'The filename for the changelog'
     required: true
-    default: '1000'
+    default: 'CHANGELOG.md'
+  replacement: # The filename
+    description: 'The word to replace in the changelog (e.g. in a different language to English)'
+    required: true
+    default: 'Unreleased'
 outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  updated:
+    description: 'The libraries where the changelog was updated'
 runs:
   using: 'node12'
   main: 'dist/index.js'
