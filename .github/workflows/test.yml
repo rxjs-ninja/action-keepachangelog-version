@@ -1,4 +1,4 @@
-name: "units-test"
+name: "Keep-A-Changelog Tests"
 on:
   pull_request:
   push:
@@ -9,6 +9,7 @@ on:
 jobs:
   # unit tests
   unit-test:
+    name: "Unit Tests"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,6 +26,7 @@ jobs:
 
   # test action works running from the graph
   action-test:
+    name: "Action Tests"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,7 +37,7 @@ jobs:
         run: cd test-workspace && npm ci
       - name: Create Diff
         run: |
-          echo -e "// New Comment\nexport * from './lib/test-lib-1';" > test-workspace/test-lib-1/src/index.ts
+          echo -e "// New Comment\nexport * from './lib/test-lib-1';" > ./test-workspace/packages/test-lib-1/src/index.ts
           git config user.email "test@test" && git config user.name "Test"
           git add . && git commit -m "Add test lib"
       - name: Run Action
