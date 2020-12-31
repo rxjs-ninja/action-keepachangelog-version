@@ -36,4 +36,5 @@ jobs:
         run: cd test-workspace && npm ci
       - uses: ./
         with:
+          rootdir: "test-workspace"
           dryrun: 'true'
