@@ -1,7 +1,18 @@
 name: 'Keep-A-Changelog Version'
 description: 'Versions a file that conforms to Keep-A-Changelog format'
 inputs:
-  filename:  # The filename
+  rootdir:
+    description: The root directory to run the command from
+    required: true
+  basebranch:
+    description: The base branch to compare against
+    required: true
+    default: 'origin/main'
+  libfolder:
+    description: 'The library folder in nx (either "packages" or "libs")'
+    required: true
+    default: 'packages'
+  filename: # The filename
     description: 'The filename for the changelog'
     required: true
     default: 'CHANGELOG.md'
