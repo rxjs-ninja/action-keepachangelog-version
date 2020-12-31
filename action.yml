@@ -4,6 +4,7 @@ inputs:
   rootdir:
     description: The root directory to run the command from
     required: true
+    default: '.'
   basebranch:
     description: The base branch to compare against
     required: true
@@ -20,6 +21,9 @@ inputs:
     description: 'The word to replace in the changelog (e.g. in a different language to English)'
     required: true
     default: 'Unreleased'
+  dryrun:
+    description: 'If this is a dry run no file changes are written'
+    default: 'false'
 outputs:
   updated:
     description: 'The libraries where the changelog was updated'

@@ -4,16 +4,20 @@ const path = require('path');
 
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
+
     process.env['INPUT_ROOTDIR'] = path.join(__dirname, 'test-workspace');
     process.env['INPUT_BASEBRANCH'] = 'origin/main';
+    process.env['INPUT_LIBFOLDER'] = 'packages';
+    process.env['INPUT_FILENAME'] = 'CHANGELOG.md';
+    process.env['INPUT_REPLACEMENT'] = 'Unreleased';
+    process.env['INPUT_DRYRUN'] = 'true';
     const ip = path.join(__dirname, 'index.js');
-    try {
-        const result = cp.execSync(`node ${ip}`, {env: process.env});
-        const output = result.toString()
-        expect(output).toContain('test-lib-1 test-lib-2')
-    } catch (e) {
-        console.log(e);
-    }
 
 
+    const result = cp.execSync(`node ${ip}`, {env: process.env}).toString();
+    const lines = result.toString().split('\n');
+
+    const parts = lines.find(line => line.includes('name=updated')).split('::');
+    const output = parts[parts.length - 1].trim();
+    expect(output).toStrictEqual('test-lib-1');
 })
