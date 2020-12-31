@@ -24,12 +24,16 @@ jobs:
 
 
   # test action works running from the graph
-  test:
+  action-test:
     runs-on: ubuntu-latest
     needs:
       - install-main
     steps:
       - uses: actions/checkout@v2
+      - name: Install Actions Workspace
+        run: npm ci
+      - name: Install Test Workspace
+        run: cd test-workspace && npm ci
       - uses: ./
         with:
           dryrun: 'true'
