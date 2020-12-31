@@ -30,20 +30,15 @@ function getFormattedDate(): string {
 }
 
 async function runExec(rootDir: string, command: string, args: string[]) {
-    try {
-        let output = '';
-        const options = {
-            listeners: {
-                stdout: (data: Buffer) => output += data.toString()
-            },
-            cwd: rootDir
-        }
-        await exec.exec(command, args, options);
-        return output.trim();
-    } catch (e) {
-        console.error(e);
-        throw e;
+    let output = '';
+    const options = {
+        listeners: {
+            stdout: (data: Buffer) => output += data.toString()
+        },
+        cwd: rootDir
     }
+    await exec.exec(command, args, options);
+    return output.trim();
 }
 
 /**
@@ -66,29 +61,17 @@ function getUpdatedLibs(foundChangelogs: string[]) {
  * @returns {Promise<[]>}
  */
 async function getLibsVersions(rootDir: string, libFolder: string, libsWithChangelogs: string[]) {
-    try {
-        const versions = [];
-        const packageFiles = libsWithChangelogs.map(lib => `${rootDir}/${libFolder}/${lib}/package.json`);
-        const packages = await glob.create(packageFiles.join('\n'))
-        const foundPackages = await packages.glob();
+    const versions = [];
+    const packageFiles = libsWithChangelogs.map(lib => `${rootDir}/${libFolder}/${lib}/package.json`);
+    const packages = await glob.create(packageFiles.join('\n'))
+    const foundPackages = await packages.glob();
 
-        for (const pack of foundPackages) {
-            let output = '';
-            const options = {
-                listeners: {
-                    stdout: (data: Buffer) => {
-                        output += data.toString();
-                    }
-                },
-            }
-            await exec.exec(`jq`, ['-r', '.version', pack], options);
-            versions.push(output.toString().trim())
-        }
-        return versions;
-    } catch (e) {
-        console.error(e);
-        throw e;
+    for (const pack of foundPackages) {
+        const version = await runExec(rootDir, 'jq', ['-r', '.version', pack]);
+        versions.push(version.trim())
     }
+    return versions;
+
 }
 
 /**
@@ -99,29 +82,25 @@ async function getLibsVersions(rootDir: string, libFolder: string, libsWithChang
  * @returns {Promise<void>}
  */
 async function updateChangelog(foundChangelogs: string[], versions: string[], replaceText: string) {
-    try {
-        const dryRun = core.getInput('dryrun');
-        let count = 0;
-        for (const changelog of foundChangelogs) {
+    const dryRun = core.getInput('dryrun');
+    let count = 0;
+    for (const changelog of foundChangelogs) {
 
-            const version = versions[count];
-            const replace = `[${version}] - ${getFormattedDate()}`;
+        const version = versions[count];
+        const replace = `[${version}] - ${getFormattedDate()}`;
 
-            const file = await readF(changelog);
-            const result = file.toString();
+        const file = await readF(changelog);
+        const result = file.toString();
 
-            if (!result.includes(`[${replaceText}`)) {
-                return Promise.reject(`The changelog ${changelog} does not have an [${replaceText}] token`)
-            }
-            const update = result.replace(`[${replaceText}]`, replace);
-            if (!dryRun || dryRun && dryRun === 'false') {
-                await writeF(changelog, update);
-            }
+        if (!result.includes(`[${replaceText}`)) {
+            throw new Error(`The changelog ${changelog} does not have an [${replaceText}] token. Exiting.`);
         }
-    } catch (e) {
-        console.error(e);
-        throw e;
+        const update = result.replace(`[${replaceText}]`, replace);
+        if (!dryRun || dryRun && dryRun === 'false') {
+            await writeF(changelog, update);
+        }
     }
+
 }
 
 async function run() {
