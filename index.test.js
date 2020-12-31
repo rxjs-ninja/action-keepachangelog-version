@@ -32,7 +32,6 @@ describe('NX Keep-A-Changelog Action', () => {
     });
 
     afterAll(async () => {
-        const cl = path.join(__dirname, 'test-workspace/packages/test-lib-1/src', 'index.ts');
         await execAsync(`git reset HEAD~1 --soft && git reset HEAD --hard`);
     })
 

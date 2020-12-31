@@ -8,7 +8,7 @@ on:
 
 jobs:
   # unit tests
-  install-main:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,15 +26,23 @@ jobs:
   # test action works running from the graph
   action-test:
     runs-on: ubuntu-latest
-    needs:
-      - install-main
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Install Actions Workspace
         run: npm ci
       - name: Install Test Workspace
         run: cd test-workspace && npm ci
-      - uses: ./
+      - name: Create Diff
+        run: |
+          echo -e "// New Comment\nexport * from './lib/test-lib-1';" > test-workspace/test-lib-1/src/index.ts
+          git config user.email "test@test" && git config user.name "Test"
+          git add . && git commit -m "Add test lib"
+      - name: Run Action
+        uses: ./
         with:
           rootdir: "test-workspace"
           dryrun: 'true'
+      - name: Cleanup
+        run: |
+          git reset HEAD~1 --soft && git reset HEAD --hard
