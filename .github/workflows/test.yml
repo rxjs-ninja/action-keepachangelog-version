@@ -1,4 +1,4 @@
-name: "Keep-A-Changelog Tests"
+name: "action-tests"
 on:
   pull_request:
   push:
